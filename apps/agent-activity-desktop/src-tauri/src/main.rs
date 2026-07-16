@@ -350,7 +350,8 @@ fn initialize_runtime() -> Result<(Arc<Runtime>, PathBuf)> {
     // Older builds persisted offline as all three lamps on. Offline is kept as
     // a per-session diagnostic state, while an empty global view is idle/off.
     if store.get_setting(OFFLINE_DEFAULT_MIGRATION_KEY)?.is_none() {
-        if !matches!(mapping.effects.get("offline"), Some(LedEffect::Solid { leds }) if leds == "000") {
+        if !matches!(mapping.effects.get("offline"), Some(LedEffect::Solid { leds }) if leds == "000")
+        {
             mapping
                 .effects
                 .insert("offline".into(), LedEffect::Solid { leds: "000".into() });

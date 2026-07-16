@@ -308,14 +308,12 @@ impl ActivityEngine {
         // Offline/sleeping sessions remain available for per-session cleanup,
         // but they must not make the global indicator look disconnected when
         // there is no active work left.
-        let global_session = sessions
-            .iter()
-            .find(|session| {
-                !matches!(
-                    session.status,
-                    SessionStatus::Offline | SessionStatus::Sleeping
-                )
-            });
+        let global_session = sessions.iter().find(|session| {
+            !matches!(
+                session.status,
+                SessionStatus::Offline | SessionStatus::Sleeping
+            )
+        });
         let global = global_session.map_or(
             GlobalState {
                 // An empty or all-offline session list is idle from the user's
@@ -795,10 +793,7 @@ mod tests {
             ))
             .unwrap();
 
-        for kind in [
-            EventKind::ModelWorking,
-            EventKind::ToolStarted,
-        ] {
+        for kind in [EventKind::ModelWorking, EventKind::ToolStarted] {
             engine
                 .apply(event("s1", "late-work", kind, Some("call-1")))
                 .unwrap();
