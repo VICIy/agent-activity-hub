@@ -20,6 +20,35 @@ Production activity delivery does not require an HTTP port. The historical
 Hook Hub on ports such as `8765` or `8766` is separate from the Tauri state
 path and is not required by this application.
 
+## macOS installation
+
+Download the application from [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases).
+The current [Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
+release includes an Apple Silicon (`arm64`) DMG:
+
+[Download Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
+
+This DMG is not signed or notarized with an Apple Developer ID. Drag the app
+to **Applications**, then Control-click it and choose **Open**. If Gatekeeper
+still reports that the app is damaged, verify the SHA-256 first and follow the
+[unsigned DMG installation guide](docs/macos-unsigned-install-cn.md) to clear
+the quarantine attribute and create a local ad-hoc signature. Intel Macs
+(`x86_64`) require a separately built Intel package.
+
+### Install through an AI Skill
+
+The repository includes an installation Skill at
+[`skills/agent-activity-hub-install/`](skills/agent-activity-hub-install/).
+Install that directory into the AI's Skill directory, then invoke it with:
+
+```text
+Use $agent-activity-hub-install to install Agent Activity Hub on this Mac.
+```
+
+The Skill prefers a GitHub Release, falls back to a source build when no
+compatible release exists, and guides the user through installing Codex,
+Claude Code, and Qoder hooks in the Tauri control panel.
+
 ## Features
 
 - Isolates sessions by `provider + instance_id + session_id`.
@@ -123,12 +152,19 @@ cd apps/agent-activity-desktop
 npm run tauri build -- --bundles app
 ```
 
+Build a macOS DMG:
+
+```bash
+npm run tauri build -- --bundles dmg
+```
+
 The build compiles the Rust Hook Helper for the active target, copies it into
 Tauri's sidecar layout, builds the React frontend, and packages the desktop
 application. The macOS application is created at:
 
 ```text
 target/release/bundle/macos/Agent Activity Hub.app
+target/release/bundle/dmg/Agent Activity Hub_0.1.0_aarch64.dmg
 ```
 
 Launch the packaged application with:

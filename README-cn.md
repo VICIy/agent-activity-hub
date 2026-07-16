@@ -18,6 +18,33 @@ Agent Hook 与会话日志
 生产状态通道不依赖 HTTP 端口。历史 Hook Hub 使用的 `8765`、`8766` 等
 端口与 Tauri 状态链路相互独立，本应用不依赖这些端口运行。
 
+## macOS 安装
+
+推荐从 [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases)
+下载 DMG。当前发布的
+[Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
+提供 Apple Silicon（`arm64`）安装包：
+
+[下载 Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
+
+当前 DMG 未使用 Apple Developer ID 签名和公证。首次安装时将应用拖入“应用程序”，
+再右键选择“打开”。如果 Gatekeeper 仍提示“文件已损坏”，请先确认下载文件的
+SHA-256，再按[未签名 DMG 安装说明](docs/macos-unsigned-install-cn.md)清理隔离标记并
+在本机重新生成 ad-hoc 签名。Intel Mac（`x86_64`）需要单独构建 Intel 版本。
+
+## AI Skill 安装
+
+仓库内置了用于自动安装、更新和启动应用的 Skill：
+[`skills/agent-activity-hub-install/`](skills/agent-activity-hub-install/)。将该目录安装
+到 AI 的 Skill 目录后，可以使用：
+
+```text
+Use $agent-activity-hub-install to install Agent Activity Hub on this Mac.
+```
+
+该 Skill 会优先选择 GitHub Release；没有可用 Release 时回退到源码构建，并在应用启动
+后引导用户在 Tauri 控制面板中安装 Codex、Claude Code、Qoder Hook。
+
 ## 功能
 
 - 使用 `provider + instance_id + session_id` 隔离每个会话。
@@ -114,11 +141,18 @@ cd apps/agent-activity-desktop
 npm run tauri build -- --bundles app
 ```
 
+生成 macOS DMG：
+
+```bash
+npm run tauri build -- --bundles dmg
+```
+
 构建流程会编译当前目标平台的 Rust Hook Helper，复制到 Tauri sidecar 目录，
 构建 React 前端并打包桌面应用。macOS 应用输出位置：
 
 ```text
 target/release/bundle/macos/Agent Activity Hub.app
+target/release/bundle/dmg/Agent Activity Hub_0.1.0_aarch64.dmg
 ```
 
 启动打包后的应用：
