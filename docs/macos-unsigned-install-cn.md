@@ -21,7 +21,7 @@ Intel 版本。
 页面下载 DMG。当前版本的 SHA-256 为：
 
 ```text
-660224a8e7935472e69d8a0e8e063eeee812dfff9131ea644f6577dfb1f6e35c
+8a1ca9ad96ee7895d2addb251c45771cad660bb744559dbe59ac294debf1b3f1
 ```
 
 在下载目录执行校验：
@@ -72,4 +72,3 @@ open "$HOME/Applications/Agent Activity Hub.app"
 未签名安装包适合个人设备或明确受信任的测试设备。要让其他用户直接双击安装而不看
 到 Gatekeeper 警告，需要 Apple Developer Program 的 `Developer ID Application`
 证书、签名和 Apple 公证。没有这些凭据时，重复构建 DMG 不会自动获得信任。
-

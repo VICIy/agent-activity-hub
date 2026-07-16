@@ -477,14 +477,19 @@ fn reduce_session(state: &mut SessionState, event: &ActivityEvent) {
         }
         ModelWorking => {
             if state.status == SessionStatus::WaitingApproval {
-                if event.source_kind.priority() < state.source_kind.priority() {
-                    return;
-                }
-                state.active_correlation_ids.clear();
+                // Session-log and native working records can race the approval
+                // hook. Only an explicit resolution or a new user prompt may
+                // leave the waiting state.
+                return;
             }
             transition(state, SessionStatus::Working, event, "model working", None);
         }
         ToolStarted => {
+            // PermissionRequest is sometimes followed by a duplicated tool-start
+            // record. Keep the approval visible until the provider resolves it.
+            if state.status == SessionStatus::WaitingApproval {
+                return;
+            }
             resolve_correlation(state, event, true);
             remember_inflight_tool(state, event);
             if state.active_correlation_ids.is_empty() {
@@ -775,6 +780,46 @@ mod tests {
         assert_eq!(
             engine.snapshot(Utc::now()).global.status,
             SessionStatus::WaitingApproval
+        );
+    }
+
+    #[test]
+    fn late_work_events_do_not_hide_waiting_approval() {
+        let mut engine = ActivityEngine::new();
+        engine
+            .apply(event(
+                "s1",
+                "required",
+                EventKind::ApprovalRequired,
+                Some("call-1"),
+            ))
+            .unwrap();
+
+        for kind in [
+            EventKind::ModelWorking,
+            EventKind::ToolStarted,
+        ] {
+            engine
+                .apply(event("s1", "late-work", kind, Some("call-1")))
+                .unwrap();
+            assert_eq!(
+                engine.snapshot(Utc::now()).global.status,
+                SessionStatus::WaitingApproval,
+                "{kind:?} must not clear a pending approval"
+            );
+        }
+
+        engine
+            .apply(event(
+                "s1",
+                "resolved",
+                EventKind::ApprovalResolved,
+                Some("call-1"),
+            ))
+            .unwrap();
+        assert_eq!(
+            engine.snapshot(Utc::now()).global.status,
+            SessionStatus::Working
         );
     }
 
