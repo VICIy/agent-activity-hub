@@ -132,6 +132,14 @@ Use $agent-activity-hub-install to install Agent Activity Hub on this Mac.
   闪烁开关、闪烁阶段时长和全局亮度。灯光设置以状态卡片呈现，可直接预览绿、黄、
   红三颗灯的组合。
 
+浮窗五种主要状态的当前样式：
+
+![红绿灯浮窗状态截图](docs/images/floating-light-states.png)
+
+Tauri 控制面板总览和设置页面：
+
+![Tauri 控制面板截图](docs/images/tauri-control-panel.png)
+
 ## Provider 适配器
 
 在 Tauri 控制面板中打开“适配器”，可以检测、安装、修复或卸载应用管理的

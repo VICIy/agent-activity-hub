@@ -149,6 +149,14 @@ status accents. It contains these views:
   login, and per-state lamp masks, blink toggles, phase intervals, and global
   brightness. Each state is edited in a compact card with a three-lamp preview.
 
+Current floating-light state gallery:
+
+![Floating traffic light states](docs/images/floating-light-states.png)
+
+Current Tauri overview and settings views:
+
+![Tauri control panel](docs/images/tauri-control-panel.png)
+
 ## Provider adapters
 
 Open **Adapters** in the Tauri control panel to detect, install, repair, or
