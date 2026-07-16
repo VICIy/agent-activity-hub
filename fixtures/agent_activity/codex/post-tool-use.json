@@ -1,0 +1,11 @@
+{
+  "hook_event_name": "PostToolUse",
+  "event_id": "codex-fixture-post-tool-1",
+  "session_id": "fixture-session-a",
+  "turn_id": "fixture-turn-1",
+  "call_id": "fixture-call-1",
+  "timestamp": "2026-07-13T10:00:02Z",
+  "tool_name": "shell_command",
+  "tool_output": "[REDACTED]"
+}
+

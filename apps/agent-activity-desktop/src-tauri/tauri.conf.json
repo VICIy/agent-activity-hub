@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Agent Activity Hub",
+  "version": "0.1.0",
+  "identifier": "work.effective.agent-activity-hub",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "node ../../tools/prepare_hook_sidecar.mjs --with-frontend",
+    "devUrl": "http://127.0.0.1:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Agent Activity Hub",
+        "width": 1180,
+        "height": 780,
+        "minWidth": 560,
+        "minHeight": 540,
+        "center": true,
+        "resizable": true
+      },
+      {
+        "label": "traffic-light",
+        "title": "Agent status",
+        "url": "index.html?view=light",
+        "width": 112,
+        "height": 222,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "shadow": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/64x64.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "externalBin": ["../../../target/sidecars/agent-activity-hook"],
+    "targets": "all",
+    "category": "DeveloperTool",
+    "shortDescription": "Local activity and attention status for coding agents",
+    "longDescription": "A local-first desktop status center for observing multiple coding agent sessions.",
+    "macOS": {
+      "minimumSystemVersion": "13.0"
+    },
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper", "silent": true }
+    }
+  }
+}

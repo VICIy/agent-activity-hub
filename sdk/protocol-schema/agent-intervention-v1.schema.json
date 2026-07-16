@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://effective.work/schemas/agent-intervention/v1.json",
+  "title": "Agent Intervention Command v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "command_id", "kind", "provider", "instance_id",
+    "session_id", "expected_revision", "issued_by", "issued_at", "expires_at", "reason"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "command_id": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "kind": {
+      "enum": [
+        "approval.approve", "approval.reject", "run.pause", "run.resume",
+        "run.cancel", "session.focus", "message.send"
+      ]
+    },
+    "provider": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+    "instance_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "correlation_id": { "type": ["string", "null"] },
+    "expected_revision": { "type": "integer", "minimum": 0 },
+    "issued_by": { "type": "string", "minLength": 1 },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 1024 }
+  }
+}
+

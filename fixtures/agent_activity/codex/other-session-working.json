@@ -1,0 +1,9 @@
+{
+  "hook_event_name": "UserPromptSubmit",
+  "event_id": "codex-fixture-working-2",
+  "session_id": "fixture-session-b",
+  "turn_id": "fixture-turn-2",
+  "timestamp": "2026-07-13T10:00:01Z",
+  "prompt": "[REDACTED]"
+}
+

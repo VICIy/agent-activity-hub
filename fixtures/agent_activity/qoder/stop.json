@@ -1,0 +1,6 @@
+{
+  "hook_event_name": "Stop",
+  "event_id": "qoder-fixture-stop-1",
+  "session_id": "qoder-fixture-session-a",
+  "timestamp": "2026-07-15T09:00:05Z"
+}

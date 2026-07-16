@@ -1,0 +1,30 @@
+[package]
+name = "activity-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "agent-activity"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.2", features = [] }
+
+[dependencies]
+activity-core = { path = "../../../native/agent-activity/activity-core" }
+activity-ipc = { path = "../../../native/agent-activity/activity-ipc" }
+activity-protocol = { path = "../../../native/agent-activity/activity-protocol" }
+activity-store = { path = "../../../native/agent-activity/activity-store" }
+anyhow.workspace = true
+async-trait.workspace = true
+chrono.workspace = true
+directories.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2.5", features = ["macos-private-api", "tray-icon"] }
+tauri-plugin-autostart = "2.3"
+tauri-plugin-single-instance = "2.3"
+tokio.workspace = true
+uuid.workspace = true
