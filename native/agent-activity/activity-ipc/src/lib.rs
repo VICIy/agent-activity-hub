@@ -1,4 +1,6 @@
-use std::{path::PathBuf, sync::Arc, time::Duration};
+#[cfg(unix)]
+use std::path::PathBuf;
+use std::{sync::Arc, time::Duration};
 
 use activity_protocol::ActivityEvent;
 use anyhow::{Context, Result};
