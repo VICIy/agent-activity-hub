@@ -1,0 +1,4 @@
+interface:
+  display_name: "Install Agent Activity Hub"
+  short_description: "Install and launch Agent Activity Hub on macOS"
+  default_prompt: "Use $agent-activity-hub-install to install or repair Agent Activity Hub on this Mac."
