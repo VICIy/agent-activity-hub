@@ -25,6 +25,7 @@ jobs:
       - run: npm run build
         working-directory: apps/agent-activity-desktop
       - run: cargo fmt --all -- --check
+      - run: npm run prepare:sidecar
+        working-directory: apps/agent-activity-desktop
       - run: cargo test --workspace
       - run: cargo clippy --workspace --all-targets -- -D warnings
-
