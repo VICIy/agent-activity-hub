@@ -98,6 +98,57 @@ floating panel; the control panel's full session list also allows offline
 entries to be removed. Dismissal does not suppress future activity from that
 session.
 
+## Interface and state presentation
+
+### Floating traffic light
+
+The floating window is a transparent, frameless, always-on-top window. It is
+vertical by default; horizontal mode places the three lamps in one row. The
+bezel is a dark rounded shell, and active lamps use a matching glow. Blink
+effects use a clear step animation with 500 ms on and 500 ms off by default.
+The floating window has no shortcut bar. Its compact content is the traffic
+light, a wrapping active-Agent strip, and an expand button.
+
+The floating presentation for each state is:
+
+| State | Lamps | Active-Agent strip | Session cards |
+|---|---|---|---|
+| Idle | All lamps off | Gray `Idle` chip | Hidden by default; gray when retained |
+| Working | Solid green | Green Agent chips | Green border and background |
+| Waiting approval | Blinking yellow | Yellow Agent chips | Yellow border and background; persistent |
+| Complete | Blinking green | Green Agent chips | Green border and background; returns to idle after its lease |
+| Error | Blinking red | Red Agent chips | Red border and background; top-right `x` dismiss action |
+| Offline / sleeping | All lamps off | Gray diagnostic information | Kept only for diagnostics |
+
+Multiple providers can appear at the same time. Active-Agent chips show the
+provider name and session count and wrap onto additional rows when needed.
+When the session panel is expanded, its width remains aligned with the light
+window. Each compact card has a status dot, Agent name, and status label on the
+first line, with the project name on the second line. The dismiss `x` for error,
+idle, and offline entries is layered into the top-right corner so it does not
+consume text space. Dismissing a card only removes the current presentation;
+new events from that session can make it appear again.
+
+### Tauri control panel
+
+The control panel uses a dark graphite interface with green, yellow, and red
+status accents. It contains these views:
+
+- **Overview**: large traffic light, global status and provider, attention count,
+  event metrics, live sessions, and an adapter summary. Global arbitration is
+  `error > waiting approval > complete > working > idle`.
+- **Sessions**: a full session table with Agent/session ID, project, status,
+  reason, and revision. It includes a back-to-overview button and top-right `x`
+  dismissal for error, idle, and offline entries.
+- **Adapters**: detect Codex, Claude Code, and Qoder hook configuration; show
+  installed event counts, configuration paths, and Helper health; install,
+  repair/reinstall, or uninstall managed hooks.
+- **Diagnostics**: accepted events, deduplicated events, local IPC readiness,
+  and output-test buttons for Working, Waiting approval, Complete, and Error.
+- **Settings**: English/Chinese, vertical/horizontal orientation, launch at
+  login, and per-state lamp masks, blink toggles, phase intervals, and global
+  brightness. Each state is edited in a compact card with a three-lamp preview.
+
 ## Provider adapters
 
 Open **Adapters** in the Tauri control panel to detect, install, repair, or
