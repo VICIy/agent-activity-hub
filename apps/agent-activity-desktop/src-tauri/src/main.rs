@@ -262,6 +262,15 @@ fn reveal_traffic_light(app: &AppHandle, center: bool) -> Result<(), String> {
     window.show().map_err(|error| error.to_string())
 }
 
+fn reveal_main_window(app: &AppHandle) -> Result<(), String> {
+    let window = app
+        .get_webview_window("main")
+        .ok_or_else(|| "main window is unavailable".to_string())?;
+    let _ = window.unminimize();
+    window.show().map_err(|error| error.to_string())?;
+    window.set_focus().map_err(|error| error.to_string())
+}
+
 #[tauri::command]
 fn show_traffic_light(app: AppHandle) -> Result<(), String> {
     reveal_traffic_light(&app, true)
@@ -481,10 +490,7 @@ fn main() {
             if args.iter().any(|argument| argument == "--background") {
                 return;
             }
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.set_focus();
-            }
+            let _ = reveal_main_window(app);
             let _ = reveal_traffic_light(app, true);
         }))
         .plugin(
@@ -527,10 +533,7 @@ fn main() {
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id().as_ref() {
                     "show" => {
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
-                        }
+                        let _ = reveal_main_window(app);
                     }
                     "light" => {
                         let _ = reveal_traffic_light(app, true);
@@ -564,8 +567,17 @@ fn main() {
                 }
             }
         })
-        .run(tauri::generate_context!())
-        .expect("run Agent Activity Hub");
+        .build(tauri::generate_context!())
+        .expect("build Agent Activity Hub")
+        .run(|app, event| {
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = event {
+                // The floating light is normally visible, so the main panel may still be hidden.
+                let _ = reveal_main_window(app);
+            }
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app, event);
+        });
 }
 
 #[cfg(test)]

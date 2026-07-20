@@ -66,8 +66,8 @@ Claude Code, and Qoder hooks in the Tauri control panel.
 - Lets dismissed sessions reappear when a newer event
   arrives for the same session.
 - Supports English and Simplified Chinese.
-- Hides the main window on close and keeps the floating light available from
-  the macOS tray menu.
+- Hides the main window on close and restores it from the macOS Dock icon or
+  tray menu; the tray menu can also recover the floating light.
 
 ## Traffic light
 
