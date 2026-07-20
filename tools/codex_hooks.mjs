@@ -46,7 +46,11 @@ function load(path) {
 
 function ownedEntry(helper, event) {
   return {
-    hooks: [{ type: "command", command: `\"${helper}\"`, timeout: 2 }],
+    hooks: [{
+      type: "command",
+      command: `\"${helper}\" --provider codex --event ${event}`,
+      timeout: 2,
+    }],
     "x-agent-activity-owner": OWNER,
     "x-agent-activity-event": event,
   };
@@ -102,7 +106,12 @@ function doctor(path) {
   const config = load(path);
   const installed = EVENTS.filter((event) =>
     Array.isArray(config.hooks?.[event])
-      && config.hooks[event].some((entry) => entry?.["x-agent-activity-owner"] === OWNER),
+      && config.hooks[event].some((entry) =>
+        entry?.["x-agent-activity-owner"] === OWNER
+        && entry.hooks?.some((hook) =>
+          typeof hook?.command === "string" && hook.command.includes(`--event ${event}`),
+        ),
+      ),
   );
   const missing = EVENTS.filter((event) => !installed.includes(event));
   console.log(JSON.stringify({ config: path, owner: OWNER, installed, missing, healthy: missing.length === 0 }, null, 2));

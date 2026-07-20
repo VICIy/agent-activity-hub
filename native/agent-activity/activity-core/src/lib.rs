@@ -281,18 +281,18 @@ impl ActivityEngine {
         true
     }
 
-    pub fn dismiss_session(&mut self, key: &SessionKey, now: DateTime<Utc>) -> bool {
-        match self.sessions.get(key).map(|state| state.status) {
-            Some(SessionStatus::Error) => self.dismiss_error(key, now),
-            Some(SessionStatus::Idle | SessionStatus::Offline) => {
-                self.sessions.remove(key);
-                // Keep event dedupe history. A genuinely new provider event has a new
-                // identity and recreates the session with its latest project and status.
-                self.global_revision += 1;
-                true
-            }
-            _ => false,
+    pub fn dismiss_session(&mut self, key: &SessionKey, _now: DateTime<Utc>) -> bool {
+        let Some(state) = self.sessions.get(key) else {
+            return false;
+        };
+        if state.status == SessionStatus::Sleeping {
+            return false;
         }
+        self.sessions.remove(key);
+        // Keep event dedupe history. A genuinely new provider event has a new
+        // identity and recreates the session with its latest project and status.
+        self.global_revision += 1;
+        true
     }
 
     pub fn snapshot(&self, now: DateTime<Utc>) -> StateSnapshot {
@@ -1499,10 +1499,7 @@ mod tests {
         };
 
         assert!(engine.dismiss_session(&key, base + Duration::seconds(1)));
-        assert_eq!(
-            engine.snapshot(base).sessions[0].status,
-            SessionStatus::Idle
-        );
+        assert!(engine.snapshot(base).sessions.is_empty());
 
         let mut resumed = event("error", "resumed", EventKind::UserPrompted, None);
         resumed.occurred_at += Duration::seconds(2);
@@ -1549,6 +1546,50 @@ mod tests {
         assert_eq!(
             snapshot.sessions[0].project.as_deref(),
             Some("latest-project")
+        );
+    }
+
+    #[test]
+    fn dismisses_waiting_approval_and_allows_a_new_request_to_reappear() {
+        let base = Utc.with_ymd_and_hms(2026, 7, 13, 10, 0, 0).unwrap();
+        let mut engine = ActivityEngine::new();
+        engine
+            .apply(provider_event(
+                "codex",
+                "approval-session",
+                "approval-1",
+                EventKind::ApprovalRequired,
+                Some("call-1"),
+                0,
+            ))
+            .unwrap();
+        let key = SessionKey {
+            provider: "codex".into(),
+            instance_id: "codex-local".into(),
+            session_id: "approval-session".into(),
+        };
+
+        assert_eq!(
+            engine.snapshot(base).global.status,
+            SessionStatus::WaitingApproval
+        );
+        assert!(engine.dismiss_session(&key, base + Duration::seconds(1)));
+        assert!(engine.snapshot(base).sessions.is_empty());
+
+        let mut next = provider_event(
+            "codex",
+            "approval-session",
+            "approval-2",
+            EventKind::ApprovalRequired,
+            Some("call-2"),
+            1,
+        );
+        next.occurred_at += Duration::seconds(2);
+        next.observed_at += Duration::seconds(2);
+        engine.apply(next).unwrap();
+        assert_eq!(
+            engine.snapshot(base + Duration::seconds(2)).global.status,
+            SessionStatus::WaitingApproval
         );
     }
 

@@ -534,13 +534,13 @@ mod tests {
     }
 
     #[test]
-    fn explicit_qoder_event_can_be_injected_when_stdin_omits_it() {
+    fn explicit_event_can_be_injected_when_stdin_omits_it() {
         let mut payload = serde_json::json!({
-            "session_id": "qoder-session",
-            "tool_name": "Bash"
+            "session_id": "codex-session",
+            "tool_name": "shell_command"
         });
         inject_event_name(&mut payload, Some("PermissionRequest".into())).unwrap();
-        let event = map_hook_event("qoder", payload).unwrap();
+        let event = map_hook_event("codex", payload).unwrap();
         assert_eq!(event.kind, EventKind::ApprovalRequired);
     }
 

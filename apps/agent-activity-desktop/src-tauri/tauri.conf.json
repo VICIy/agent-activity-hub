@@ -26,12 +26,14 @@
         "label": "traffic-light",
         "title": "Agent status",
         "url": "index.html?view=light",
-        "width": 112,
-        "height": 222,
+        "width": 184,
+        "height": 130,
         "resizable": false,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
+        "center": true,
+        "visible": true,
         "skipTaskbar": true,
         "shadow": false
       }

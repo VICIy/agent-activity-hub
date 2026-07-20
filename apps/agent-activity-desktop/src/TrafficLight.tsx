@@ -113,7 +113,7 @@ export function TrafficLight({
 
   return (
     <div className={`traffic-shell ${orientClass} ${compact ? "compact" : ""} ${expanded ? "expanded" : ""}`} data-tauri-drag-region>
-      <div className="traffic-bezel" data-tauri-drag-region>
+      <div className="traffic-bezel" key={status} data-tauri-drag-region>
         {TRAFFIC_LIGHT_COLOR_ORDER.map((color) => (
           <div
             key={color}
@@ -174,7 +174,9 @@ export function TrafficLight({
                     ? t("session.dismissError")
                     : session.status === "offline"
                       ? t("session.dismissOffline")
-                      : t("session.dismissIdle");
+                      : session.status === "idle"
+                        ? t("session.dismissIdle")
+                        : t("session.dismissActive");
                   return (
                     <div
                       className={`light-session-card status-${session.status} ${dismissible ? "has-dismiss" : ""}`}

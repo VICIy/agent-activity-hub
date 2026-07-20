@@ -6,11 +6,13 @@ import {
 } from "./ledEffects";
 
 describe("Tauri traffic light effects", () => {
-  it("keeps working solid but makes completion blink in 500 ms phases", () => {
+  it("keeps working solid, while approval and completion use their own lamps", () => {
     const working = resolveStatusLedEffect("working", DEFAULT_LED_MAPPING);
+    const waiting = resolveStatusLedEffect("waiting_approval", DEFAULT_LED_MAPPING);
     const complete = resolveStatusLedEffect("complete", DEFAULT_LED_MAPPING);
 
     expect(working).toEqual({ bits: [true, false, false], blink: false, period: 500 });
+    expect(waiting).toEqual({ bits: [false, true, false], blink: true, period: 500 });
     expect(complete).toEqual({ bits: [true, false, false], blink: true, period: 500 });
     expect(complete.period * 2).toBe(1000);
   });

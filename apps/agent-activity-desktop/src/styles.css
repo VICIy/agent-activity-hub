@@ -178,6 +178,10 @@ main { min-width: 0; height: 100vh; overflow: auto; }
 .session-dismiss-main:hover { color: #fff; background: rgba(242,99,99,.35); }
 .session-dismiss-main.status-idle { border-color: rgba(146,154,162,.48); color: #929aa2; }
 .session-dismiss-main.status-idle:hover { background: rgba(83,91,99,.55); }
+.session-dismiss-main.status-working, .session-dismiss-main.status-complete { border-color: rgba(69,212,131,.52); color: #72efa6; }
+.session-dismiss-main.status-working:hover, .session-dismiss-main.status-complete:hover { background: rgba(35,121,73,.42); }
+.session-dismiss-main.status-waiting_approval { border-color: rgba(243,185,73,.58); color: #ffd066; }
+.session-dismiss-main.status-waiting_approval:hover { background: rgba(145,95,15,.44); }
 .empty-state { min-height: 154px; border-block: 1px solid var(--line); background: var(--surface); color: #737d86; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .empty-state strong { margin-top: 10px; color: #bbc1c7; font-size: 12px; }
 .empty-state span { margin-top: 4px; font-size: 10px; }

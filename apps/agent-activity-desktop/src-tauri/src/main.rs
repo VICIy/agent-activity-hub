@@ -250,6 +250,23 @@ fn get_adapter_statuses(app: AppHandle) -> Vec<hook_config::AdapterStatus> {
     hook_config::statuses(&app)
 }
 
+fn reveal_traffic_light(app: &AppHandle, center: bool) -> Result<(), String> {
+    let window = app
+        .get_webview_window("traffic-light")
+        .ok_or_else(|| "traffic-light window is unavailable".to_string())?;
+    let _ = window.unminimize();
+    let _ = window.set_always_on_top(true);
+    if center {
+        let _ = window.center();
+    }
+    window.show().map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+fn show_traffic_light(app: AppHandle) -> Result<(), String> {
+    reveal_traffic_light(&app, true)
+}
+
 #[tauri::command]
 fn configure_adapter(
     provider: String,
@@ -468,9 +485,7 @@ fn main() {
                 let _ = window.show();
                 let _ = window.set_focus();
             }
-            if let Some(window) = app.get_webview_window("traffic-light") {
-                let _ = window.show();
-            }
+            let _ = reveal_traffic_light(app, true);
         }))
         .plugin(
             tauri_plugin_autostart::Builder::new()
@@ -487,17 +502,17 @@ fn main() {
             set_autostart,
             get_adapter_statuses,
             configure_adapter,
+            show_traffic_light,
             emit_demo_event
         ])
         .setup(move |app| {
             *runtime.app.lock().expect("app lock poisoned") = Some(app.handle().clone());
 
+            let _ = reveal_traffic_light(app.handle(), true);
+
             if background {
                 if let Some(window) = app.get_webview_window("main") {
                     let _ = window.hide();
-                }
-                if let Some(window) = app.get_webview_window("traffic-light") {
-                    let _ = window.show();
                 }
             }
 
@@ -518,9 +533,7 @@ fn main() {
                         }
                     }
                     "light" => {
-                        if let Some(window) = app.get_webview_window("traffic-light") {
-                            let _ = window.show();
-                        }
+                        let _ = reveal_traffic_light(app, true);
                     }
                     "unlock" => {
                         if let Some(window) = app.get_webview_window("traffic-light") {

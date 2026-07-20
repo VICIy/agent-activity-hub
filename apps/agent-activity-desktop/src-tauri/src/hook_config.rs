@@ -243,7 +243,9 @@ fn inspect(provider: Provider, path: &Path, helper: Option<&Path>) -> AdapterSta
             missing_events.push((*event).to_string());
         } else {
             installed_events += 1;
-            all_commands_usable &= owned.iter().any(|entry| entry_is_usable(entry));
+            all_commands_usable &= owned
+                .iter()
+                .any(|entry| entry_is_usable(provider, event, entry));
         }
     }
     let state = if legacy_entries > 0 {
@@ -350,7 +352,12 @@ fn owned_entry(provider: Provider, event: &str, helper: &Path) -> Value {
     } else {
         json!({
             "type": "command",
-            "command": format!("{} --provider {}", quote_command_path(&helper), provider.id()),
+            "command": format!(
+                "{} --provider {} --event {}",
+                quote_command_path(&helper),
+                provider.id(),
+                event
+            ),
             "timeout": if provider == Provider::Codex { 2 } else { 5 }
         })
     };
@@ -404,14 +411,17 @@ fn count_legacy_entries(hooks: &Map<String, Value>) -> usize {
         .count()
 }
 
-fn entry_is_usable(entry: &Value) -> bool {
+fn entry_is_usable(provider: Provider, event: &str, entry: &Value) -> bool {
     entry
         .get("hooks")
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
         .filter_map(|hook| hook.get("command").and_then(Value::as_str))
-        .any(command_is_usable)
+        .any(|command| {
+            command_is_usable(command)
+                && (provider != Provider::Codex || command.contains(&format!("--event {event}")))
+        })
 }
 
 fn command_is_usable(command: &str) -> bool {
@@ -580,12 +590,44 @@ mod tests {
             .find(|entry| is_owned(entry))
             .unwrap();
         assert!(managed.get("matcher").is_none());
+        assert_eq!(
+            managed["hooks"][0]["command"],
+            json!(format!(
+                "'{}' --provider codex --event SessionStart",
+                helper.display()
+            ))
+        );
 
         uninstall(Provider::Codex, &config_path).unwrap();
         let uninstalled = read_config(&config_path).unwrap();
         assert_eq!(uninstalled["model"], json!("example"));
         assert_eq!(uninstalled["hooks"]["SessionStart"], json!([unowned]));
         fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn codex_entries_without_explicit_event_are_not_treated_as_current() {
+        let shell = if cfg!(windows) { "cmd" } else { "sh" };
+        let entry = json!({
+            "hooks": [{
+                "command": format!("{shell} --provider codex")
+            }]
+        });
+        assert!(!entry_is_usable(
+            Provider::Codex,
+            "PermissionRequest",
+            &entry
+        ));
+        let current = json!({
+            "hooks": [{
+                "command": format!("{shell} --provider codex --event PermissionRequest")
+            }]
+        });
+        assert!(entry_is_usable(
+            Provider::Codex,
+            "PermissionRequest",
+            &current
+        ));
     }
 
     #[test]

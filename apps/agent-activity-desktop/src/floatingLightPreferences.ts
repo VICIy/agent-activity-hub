@@ -1,6 +1,7 @@
 export type FloatingLightOrientation = "vertical" | "horizontal";
 
 export const FLOATING_LIGHT_ORIENTATION_EVENT = "light://orientation";
+export const DEFAULT_FLOATING_LIGHT_ORIENTATION: FloatingLightOrientation = "horizontal";
 const ORIENTATION_STORAGE_KEY = "agent-activity.orientation";
 
 export function isFloatingLightOrientation(value: unknown): value is FloatingLightOrientation {
@@ -14,7 +15,7 @@ export function readFloatingLightOrientation(): FloatingLightOrientation {
   } catch {
     /* ignore */
   }
-  return "vertical";
+  return DEFAULT_FLOATING_LIGHT_ORIENTATION;
 }
 
 export function writeFloatingLightOrientation(orientation: FloatingLightOrientation): void {

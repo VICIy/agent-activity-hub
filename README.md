@@ -63,7 +63,7 @@ Claude Code, and Qoder hooks in the Tauri control panel.
   `idle`.
 - Treats an empty or all-offline session set as global `idle`, so clearing
   the session list leaves every lamp off.
-- Lets dismissed error, idle, or offline sessions reappear when a newer event
+- Lets dismissed sessions reappear when a newer event
   arrives for the same session.
 - Supports English and Simplified Chinese.
 - Hides the main window on close and keeps the floating light available from
@@ -93,18 +93,18 @@ The Settings page can change:
 
 The floating panel uses a compact responsive layout. Active Agent chips wrap
 onto additional rows, while expanded session cards show Agent and project
-names on separate lines. Error and idle entries can be dismissed from the
-floating panel; the control panel's full session list also allows offline
-entries to be removed. Dismissal does not suppress future activity from that
-session.
+names on separate lines. Red, green, and yellow session cards expose a
+dismiss `x`; the control panel's full session list also allows offline entries
+to be removed. Dismissal does not suppress future activity from that session.
 
 ## Interface and state presentation
 
 ### Floating traffic light
 
 The floating window is a transparent, frameless, always-on-top window. It is
-vertical by default; horizontal mode places the three lamps in one row. The
-bezel is a dark rounded shell, and active lamps use a matching glow. Blink
+horizontal by default, placing the three lamps in one row; vertical mode stacks
+them in a column. The bezel is a dark rounded shell, and active lamps use a
+matching glow. Blink
 effects use a clear step animation with 500 ms on and 500 ms off by default.
 The floating window has no shortcut bar. Its compact content is the traffic
 light, a wrapping active-Agent strip, and an expand button.
@@ -139,7 +139,8 @@ status accents. It contains these views:
   `error > waiting approval > complete > working > idle`.
 - **Sessions**: a full session table with Agent/session ID, project, status,
   reason, and revision. It includes a back-to-overview button and top-right `x`
-  dismissal for error, idle, and offline entries.
+  dismissal for visible error, working, approval, complete, idle, and offline
+  entries.
 - **Adapters**: detect Codex, Claude Code, and Qoder hook configuration; show
   installed event counts, configuration paths, and Helper health; install,
   repair/reinstall, or uninstall managed hooks.

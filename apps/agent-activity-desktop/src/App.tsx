@@ -13,6 +13,7 @@ import {
   Download,
   FlaskConical,
   LoaderCircle,
+  PanelTopOpen,
   RefreshCw,
   Search,
   Settings,
@@ -71,6 +72,11 @@ export default function App() {
   const errors = snapshot.sessions.filter((session) => session.status === "error").length;
   const currentNav = nav.find(([key]) => key === view)!;
 
+  async function showFloatingLight() {
+    if (!isTauri()) return;
+    await invoke("show_traffic_light");
+  }
+
   return (
     <div className="app-frame">
       <aside className="sidebar">
@@ -97,6 +103,7 @@ export default function App() {
           <div><h1>{t(currentNav[1])}</h1><p>{t("topbar.subtitle")}</p></div>
           <div className="top-actions">
             <label className="search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("topbar.search")} /></label>
+            <button className="icon-button" title={t("topbar.showLight")} aria-label={t("topbar.showLight")} onClick={() => void showFloatingLight()}><PanelTopOpen size={17} /></button>
             <button className="icon-button" title={t("topbar.refresh")} onClick={() => void refresh()}><RefreshCw size={17} /></button>
           </div>
         </header>
@@ -183,7 +190,9 @@ function SessionTable({ sessions }: { sessions: SessionState[] }) {
           ? t("session.dismissError")
           : session.status === "offline"
             ? t("session.dismissOffline")
-            : t("session.dismissIdle");
+            : session.status === "idle"
+              ? t("session.dismissIdle")
+              : t("session.dismissActive");
         return (
           <div className={`table-row ${dismissible ? "has-dismiss" : ""}`} key={`${session.key.provider}:${session.key.instance_id}:${session.key.session_id}`}>
             <div className="session-identity">
