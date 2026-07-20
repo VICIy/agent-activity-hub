@@ -27,6 +27,9 @@ Agent Hook 与会话日志
 
 [下载 Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
 
+安装后的应用名称是 **Agent Activity Hub**；红绿灯是应用内的浮动窗口，不是独立应用。
+将应用拖入“应用程序”后，请在 Finder 或 Spotlight 中搜索 **Agent Activity Hub**。
+
 当前 DMG 未使用 Apple Developer ID 签名和公证。首次安装时将应用拖入“应用程序”，
 再右键选择“打开”。如果 Gatekeeper 仍提示“文件已损坏”，请先确认下载文件的
 SHA-256，再按[未签名 DMG 安装说明](docs/macos-unsigned-install-cn.md)清理隔离标记并

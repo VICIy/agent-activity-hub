@@ -28,6 +28,10 @@ release includes an Apple Silicon (`arm64`) DMG:
 
 [Download Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
 
+The installed application is named **Agent Activity Hub**. The traffic light is
+its floating window, not a separate application. After dragging the app to
+**Applications**, search for **Agent Activity Hub** in Finder or Spotlight.
+
 This DMG is not signed or notarized with an Apple Developer ID. Drag the app
 to **Applications**, then Control-click it and choose **Open**. If Gatekeeper
 still reports that the app is damaged, verify the SHA-256 first and follow the

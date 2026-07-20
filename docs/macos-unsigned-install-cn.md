@@ -1,11 +1,12 @@
 # macOS 未签名 DMG 安装说明
 
 本文适用于从 GitHub Releases 下载的、未经过 Apple Developer ID 签名和公证的
-`Agent Activity Hub` macOS 安装包。
+`Agent Activity Hub` macOS 安装包。红绿灯是应用内浮窗，安装后应从“应用程序”中启动
+`Agent Activity Hub`，不会出现名为“红绿灯”的独立应用。
 
 ## 适用范围
 
-当前 `Agent Activity Hub_0.1.0_aarch64.dmg` 是 Apple Silicon 版本，只能运行在
+当前 `Agent.Activity.Hub_0.1.0_aarch64.dmg` 是 Apple Silicon 版本，只能运行在
 `arm64` Mac 上。目标电脑可以先执行：
 
 ```bash
@@ -21,13 +22,13 @@ Intel 版本。
 页面下载 DMG。当前版本的 SHA-256 为：
 
 ```text
-8a1ca9ad96ee7895d2addb251c45771cad660bb744559dbe59ac294debf1b3f1
+1c84d09244ed4287d5a9081b6c74ec8301d9d5870726f5eb0e7df2de8698740a
 ```
 
 在下载目录执行校验：
 
 ```bash
-shasum -a 256 "$HOME/Downloads/Agent Activity Hub_0.1.0_aarch64.dmg"
+shasum -a 256 "$HOME/Downloads/Agent.Activity.Hub_0.1.0_aarch64.dmg"
 ```
 
 只有校验值一致时才继续安装。
