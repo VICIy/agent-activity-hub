@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { closeSync, copyFileSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { delimiter, dirname, join, resolve } from "node:path";
 
 const OWNER = "work.effective.agent-activity-hub/v1";
 const EVENTS = [
@@ -109,13 +109,34 @@ function doctor(path) {
       && config.hooks[event].some((entry) =>
         entry?.["x-agent-activity-owner"] === OWNER
         && entry.hooks?.some((hook) =>
-          typeof hook?.command === "string" && hook.command.includes(`--event ${event}`),
+          typeof hook?.command === "string" && commandIsUsable(hook.command, event),
         ),
       ),
   );
   const missing = EVENTS.filter((event) => !installed.includes(event));
   console.log(JSON.stringify({ config: path, owner: OWNER, installed, missing, healthy: missing.length === 0 }, null, 2));
   if (missing.length) process.exitCode = 2;
+}
+
+function commandIsUsable(command, event) {
+  if (!command.includes(`--event ${event}`)) return false;
+  const trimmed = command.trim();
+  const executable = trimmed.startsWith('"')
+    ? trimmed.slice(1).split('"')[0]
+    : trimmed.startsWith("'")
+      ? trimmed.slice(1).split("'")[0]
+      : trimmed.split(/\s+/, 1)[0];
+  if (!executable) return false;
+  if (executable.includes("/") || executable.includes("\\")) {
+    return existsSync(executable);
+  }
+  return (process.env.PATH ?? "")
+    .split(delimiter)
+    .filter(Boolean)
+    .some((directory) =>
+      existsSync(join(directory, executable))
+      || (process.platform === "win32" && existsSync(join(directory, `${executable}.exe`))),
+    );
 }
 
 function preview(path, current, next) {

@@ -240,6 +240,7 @@ function AdaptersView() {
   const [loading, setLoading] = useState(true);
   const [activeProvider, setActiveProvider] = useState<AdapterProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   async function detect() {
     if (!isTauri()) {
@@ -249,6 +250,7 @@ function AdaptersView() {
     }
     setLoading(true);
     setError(null);
+    setNotice(null);
     try {
       setStatuses(await invoke<AdapterStatus[]>("get_adapter_statuses"));
     } catch (reason) {
@@ -265,9 +267,13 @@ function AdaptersView() {
   async function configure(provider: AdapterProvider, action: "install" | "uninstall") {
     setActiveProvider(provider);
     setError(null);
+    setNotice(null);
     try {
       const updated = await invoke<AdapterStatus>("configure_adapter", { provider, action });
       setStatuses((current) => current.map((status) => status.provider === provider ? updated : status));
+      if (action === "install") {
+        setNotice(t("adapters.restartRequired", { provider: t(adapterMetadata[provider].name) }));
+      }
     } catch (reason) {
       setError(String(reason));
     } finally {
@@ -284,6 +290,7 @@ function AdaptersView() {
         </button>
       </div>
       {error && <div className="adapter-error" role="alert">{error}</div>}
+      {notice && <div className="adapter-notice" role="status"><RefreshCw size={14} />{notice}</div>}
       <div className="list-panel adapter-list">
         {loading && statuses.length === 0 ? (
           <div className="adapter-loading"><LoaderCircle className="spinning" size={18} />{t("adapters.detecting")}</div>

@@ -153,8 +153,9 @@ Hook。
 
 应用管理的 Hook 使用
 `work.effective.agent-activity-hub/v1` 标识。安装过程会保留其他 Hook 和
-顶层设置，并在原子替换配置前创建备份。Codex 使用正则 `.*` 匹配全部受管
-生命周期事件，确保授权请求能够进入 Tauri。
+顶层设置，并在原子替换配置前创建备份。Codex Hook 不设置工具 matcher，
+而是为每个生命周期事件显式传入事件名，确保授权请求能够进入 Tauri。
+安装或修复 Hook 后需要重启对应的 Provider，让正在运行的进程加载新配置。
 
 Hook Helper 已随应用打包。最终用户不需要本仓库、Python、私有 Shell 脚本或
 固定 HTTP 服务。

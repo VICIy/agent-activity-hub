@@ -172,8 +172,10 @@ uninstall managed hooks.
 Managed entries are marked with
 `work.effective.agent-activity-hub/v1`. Installation preserves unrelated
 hooks and top-level settings and writes a backup before replacing a provider
-configuration. Codex matchers use the regular expression `.*`, allowing
-permission requests and all other managed lifecycle events to reach Tauri.
+configuration. Codex hooks omit tool matchers and pass each lifecycle event
+name explicitly, allowing permission requests and all other managed events to
+reach Tauri. Restart the provider after installing or repairing hooks so its
+running process loads the new configuration.
 
 The Hook Helper is bundled inside the application. End users do not need this
 repository, Python, a private shell wrapper, or a fixed HTTP service.
