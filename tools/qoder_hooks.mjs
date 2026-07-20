@@ -171,7 +171,7 @@ function atomicWrite(path, config) {
   }
   const temporary = `${path}.agent-activity.tmp`;
   writeFileSync(temporary, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o600 });
-  const descriptor = openSync(temporary, "r");
+  const descriptor = openSync(temporary, "r+");
   fsyncSync(descriptor);
   closeSync(descriptor);
   renameSync(temporary, path);

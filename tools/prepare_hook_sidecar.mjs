@@ -7,6 +7,8 @@ import { fileURLToPath } from "node:url";
 const toolsDirectory = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = resolve(toolsDirectory, "..");
 const frontendDirectory = join(workspaceRoot, "apps", "agent-activity-desktop");
+const typescriptScript = join(frontendDirectory, "node_modules", "typescript", "bin", "tsc");
+const viteScript = join(frontendDirectory, "node_modules", "vite", "bin", "vite.js");
 const args = process.argv.slice(2);
 const hostTarget = rustHostTriple();
 const target = argumentValue(args, "--target")
@@ -38,7 +40,11 @@ if (target === hostTarget) {
 }
 
 if (args.includes("--with-frontend")) {
-  run(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "build"], {
+  run(process.execPath, [typescriptScript], {
+    cwd: frontendDirectory,
+    env: process.env,
+  });
+  run(process.execPath, [viteScript, "build"], {
     cwd: frontendDirectory,
     env: process.env,
   });

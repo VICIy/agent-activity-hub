@@ -262,7 +262,7 @@ where
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use super::*;
 
@@ -275,7 +275,6 @@ mod tests {
         }
     }
 
-    #[cfg(unix)]
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn unix_ipc_round_trip_requires_successful_handshake() {
         let path = std::env::temp_dir().join(format!(

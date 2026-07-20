@@ -7,9 +7,10 @@ use std::{
 
 use anyhow::{anyhow, Context, Result};
 use chrono::Utc;
-use directories::BaseDirs;
+use directories::{BaseDirs, ProjectDirs};
 use serde::Serialize;
 use serde_json::{json, Map, Value};
+use sha2::{Digest, Sha256};
 use tauri::{AppHandle, Manager};
 use uuid::Uuid;
 
@@ -138,8 +139,9 @@ pub fn configure(app: &AppHandle, provider: &str, action: &str) -> Result<Adapte
     let path = config_path(provider);
     match action {
         "install" => {
-            let helper = resolve_helper_path(app)
+            let source = resolve_helper_path(app)
                 .ok_or_else(|| anyhow!("bundled Hook Helper is unavailable"))?;
+            let helper = persist_helper(&source, &managed_helper_directory()?)?;
             install(provider, &path, &helper)?;
         }
         "uninstall" => uninstall(provider, &path)?,
@@ -187,6 +189,57 @@ fn resolve_helper_path(app: &AppHandle) -> Option<PathBuf> {
     candidates.push(workspace.join("target/debug").join(executable_name));
     candidates.push(workspace.join("target/release").join(executable_name));
     candidates.into_iter().find(|candidate| candidate.is_file())
+}
+
+fn managed_helper_directory() -> Result<PathBuf> {
+    let directories = ProjectDirs::from("work", "Effective Work", "Agent Activity Hub")
+        .ok_or_else(|| anyhow!("cannot resolve application data directory"))?;
+    Ok(directories.data_local_dir().join("hooks"))
+}
+
+fn persist_helper(source: &Path, directory: &Path) -> Result<PathBuf> {
+    let payload =
+        fs::read(source).with_context(|| format!("read Hook Helper {}", source.display()))?;
+    let digest = format!("{:x}", Sha256::digest(&payload));
+    let suffix = if cfg!(windows) { ".exe" } else { "" };
+    let destination = directory.join(format!("agent-activity-hook-{}{suffix}", &digest[..16]));
+
+    if destination.is_file() {
+        anyhow::ensure!(
+            fs::read(&destination)? == payload,
+            "installed Hook Helper content does not match its digest: {}",
+            destination.display()
+        );
+        return Ok(destination);
+    }
+
+    fs::create_dir_all(directory)?;
+    let temporary = directory.join(format!(".agent-activity-hook-{}.tmp", Uuid::new_v4()));
+    let mut options = OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o700);
+    }
+    let mut file = options.open(&temporary)?;
+    file.write_all(&payload)?;
+    file.sync_all()?;
+    drop(file);
+
+    if let Err(error) = fs::rename(&temporary, &destination) {
+        if destination.is_file() {
+            fs::remove_file(&temporary).ok();
+        } else {
+            fs::remove_file(&temporary).ok();
+            return Err(error)
+                .with_context(|| format!("install Hook Helper at {}", destination.display()));
+        }
+    }
+    File::open(directory)
+        .and_then(|directory| directory.sync_all())
+        .ok();
+    Ok(destination)
 }
 
 fn inspect(provider: Provider, path: &Path, helper: Option<&Path>) -> AdapterStatus {
@@ -377,7 +430,7 @@ fn owned_entry(provider: Provider, event: &str, helper: &Path) -> Value {
 
 fn quote_command_path(path: &str) -> String {
     if cfg!(windows) {
-        format!("\"{}\"", path.replace('"', "\\\""))
+        format!("& '{}'", path.replace('\'', "''"))
     } else {
         format!("'{}'", path.replace('\'', "'\\''"))
     }
@@ -426,6 +479,10 @@ fn entry_is_usable(provider: Provider, event: &str, entry: &Value) -> bool {
 
 fn command_is_usable(command: &str) -> bool {
     let command = command.trim();
+    let command = command
+        .strip_prefix('&')
+        .map(str::trim_start)
+        .unwrap_or(command);
     let executable = if let Some(rest) = command.strip_prefix('"') {
         rest.split('"').next().unwrap_or_default()
     } else if let Some(rest) = command.strip_prefix('\'') {
@@ -593,8 +650,8 @@ mod tests {
         assert_eq!(
             managed["hooks"][0]["command"],
             json!(format!(
-                "'{}' --provider codex --event SessionStart",
-                helper.display()
+                "{} --provider codex --event SessionStart",
+                quote_command_path(&helper.to_string_lossy())
             ))
         );
 
@@ -628,6 +685,27 @@ mod tests {
             "PermissionRequest",
             &current
         ));
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn windows_commands_use_the_powershell_call_operator() {
+        assert_eq!(
+            quote_command_path(r"C:\Program Files\Agent Activity\agent-activity-hook.exe"),
+            r"& 'C:\Program Files\Agent Activity\agent-activity-hook.exe'"
+        );
+    }
+
+    #[test]
+    fn powershell_command_path_is_detected_as_usable() {
+        let root = test_root();
+        let helper = root.join("agent activity hook");
+        fs::write(&helper, "helper").unwrap();
+        let command = format!("& '{}' --provider codex", helper.display());
+
+        assert!(command_is_usable(&command));
+
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
@@ -675,6 +753,30 @@ mod tests {
             inspect(Provider::Claude, &config_path, Some(&helper)).state,
             "error"
         );
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn persisted_helper_is_content_addressed_and_reused() {
+        let root = test_root();
+        let source = root.join(if cfg!(windows) {
+            "source-helper.exe"
+        } else {
+            "source-helper"
+        });
+        let directory = root.join("installed");
+        fs::write(&source, "helper-v1").unwrap();
+
+        let first = persist_helper(&source, &directory).unwrap();
+        let second = persist_helper(&source, &directory).unwrap();
+        assert_eq!(first, second);
+        assert_eq!(fs::read(&first).unwrap(), b"helper-v1");
+        assert_eq!(first.parent(), Some(directory.as_path()));
+
+        fs::write(&source, "helper-v2").unwrap();
+        let updated = persist_helper(&source, &directory).unwrap();
+        assert_ne!(first, updated);
+        assert_eq!(fs::read(updated).unwrap(), b"helper-v2");
         fs::remove_dir_all(root).unwrap();
     }
 

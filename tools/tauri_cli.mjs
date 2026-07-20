@@ -12,6 +12,8 @@ const tauriBinary = join(
   ".bin",
   process.platform === "win32" ? "tauri.cmd" : "tauri",
 );
+const tauriScript = join(frontendDirectory, "node_modules", "@tauri-apps", "cli", "tauri.js");
+const viteScript = join(frontendDirectory, "node_modules", "vite", "bin", "vite.js");
 const args = process.argv.slice(2);
 const command = args[0];
 const target = argumentValue(args, "--target");
@@ -21,11 +23,15 @@ const childEnvironment = {
 };
 
 if (command !== "dev") {
-  const result = spawnSync(tauriBinary, args, {
-    cwd: frontendDirectory,
-    env: childEnvironment,
-    stdio: "inherit",
-  });
+  const result = spawnSync(
+    process.platform === "win32" ? process.execPath : tauriBinary,
+    process.platform === "win32" ? [tauriScript, ...args] : args,
+    {
+      cwd: frontendDirectory,
+      env: childEnvironment,
+      stdio: "inherit",
+    },
+  );
   if (result.error) throw result.error;
   process.exit(result.status ?? 1);
 }
@@ -45,11 +51,15 @@ const port = await findAvailablePort(host, 1420);
 const devUrl = `http://${host}:${port}`;
 console.log(`Starting Tauri development frontend at ${devUrl}`);
 
-const vite = spawn(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "dev"], {
-  cwd: frontendDirectory,
-  env: { ...childEnvironment, AGENT_ACTIVITY_DEV_PORT: String(port) },
-  stdio: "inherit",
-});
+const vite = spawn(
+  process.platform === "win32" ? process.execPath : "npm",
+  process.platform === "win32" ? [viteScript] : ["run", "dev"],
+  {
+    cwd: frontendDirectory,
+    env: { ...childEnvironment, AGENT_ACTIVITY_DEV_PORT: String(port) },
+    stdio: "inherit",
+  },
+);
 let viteExit = null;
 vite.once("exit", (code) => { viteExit = code ?? 1; });
 
@@ -61,11 +71,17 @@ try {
 }
 
 const override = JSON.stringify({ build: { beforeDevCommand: "", devUrl } });
-const tauri = spawn(tauriBinary, ["dev", "--config", override, ...args.slice(1)], {
-  cwd: frontendDirectory,
-  env: childEnvironment,
-  stdio: "inherit",
-});
+const tauri = spawn(
+  process.platform === "win32" ? process.execPath : tauriBinary,
+  process.platform === "win32"
+    ? [tauriScript, "dev", "--config", override, ...args.slice(1)]
+    : ["dev", "--config", override, ...args.slice(1)],
+  {
+    cwd: frontendDirectory,
+    env: childEnvironment,
+    stdio: "inherit",
+  },
+);
 
 let stopping = false;
 function stopChildren(signal = "SIGTERM") {

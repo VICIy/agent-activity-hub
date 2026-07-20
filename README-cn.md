@@ -18,10 +18,26 @@ Agent Hook 与会话日志
 生产状态通道不依赖 HTTP 端口。历史 Hook Hub 使用的 `8765`、`8766` 等
 端口与 Tauri 状态链路相互独立，本应用不依赖这些端口运行。
 
+## Windows 安装
+
+从 [Agent Activity Hub v0.1.1](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.1)
+下载 64 位 Windows 安装程序：
+
+[下载 Agent.Activity.Hub_0.1.1_x64-setup.exe](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.1/Agent.Activity.Hub_0.1.1_x64-setup.exe)
+
+运行前请使用 Release 中的
+[`SHA256SUMS.txt`](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.1/SHA256SUMS.txt)
+校验下载文件。
+
+安装包支持 64 位 Windows 10 和 Windows 11；系统缺少 WebView2 时会通过微软的
+Bootstrapper 安装。当前安装包未进行代码签名，Windows SmartScreen 可能需要选择
+“更多信息 > 仍要运行”。安装后打开 **Agent Activity Hub**，在控制面板中安装所需
+Provider 的 Hook；已经运行的 Provider 应用需要重启。
+
 ## macOS 安装
 
 推荐从 [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases)
-下载 DMG。当前发布的
+下载 DMG。当前 macOS 发布的
 [Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
 提供 Apple Silicon（`arm64`）安装包：
 
@@ -65,6 +81,18 @@ Use $agent-activity-hub-install to install Agent Activity Hub on this Mac.
 - 支持英文与简体中文。
 - 关闭主窗口时应用继续在后台运行，可通过 macOS 程序坞图标或托盘菜单重新
   打开控制面板，也可从托盘菜单恢复红绿灯浮窗。
+
+## 平台兼容性
+
+Windows 使用当前用户的 Named Pipe、兼容 PowerShell 的 Hook Helper 路径引用方式和
+Windows Tauri 启动器；macOS 继续使用 Unix Socket、POSIX 可执行权限和原生 Tauri
+启动器。平台专用逻辑均通过编译期条件隔离，CI 会在 `windows-2022` 与 `macos-14`
+上分别构建、测试并运行 Clippy。
+
+这些改动提交到仓库后，其他用户拉取对应提交并重新构建或安装该版本即可生效；仅拉取
+源码不会自动更新已经安装的应用。升级后从控制面板重新安装 Provider Hook，会把按内容
+寻址的 Hook Helper 保存到用户的应用数据目录，Hook 不再依赖源码目录或 Rust
+`target/` 目录。
 
 ## 红绿灯浮窗
 
@@ -191,23 +219,26 @@ npm run tauri dev
 
 ## 生产构建
 
-```bash
+在 Windows 上生成 NSIS 安装程序：
+
+```powershell
 cd apps/agent-activity-desktop
-npm run tauri build -- --bundles app
+npm run tauri build -- --bundles nsis
 ```
 
-生成 macOS DMG：
+在 macOS 上生成 DMG：
 
 ```bash
 npm run tauri build -- --bundles dmg
 ```
 
 构建流程会编译当前目标平台的 Rust Hook Helper，复制到 Tauri sidecar 目录，
-构建 React 前端并打包桌面应用。macOS 应用输出位置：
+构建 React 前端并打包桌面应用。各平台安装包输出位置：
 
 ```text
+target/release/bundle/nsis/Agent Activity Hub_0.1.1_x64-setup.exe
 target/release/bundle/macos/Agent Activity Hub.app
-target/release/bundle/dmg/Agent Activity Hub_0.1.0_aarch64.dmg
+target/release/bundle/dmg/Agent Activity Hub_0.1.1_aarch64.dmg
 ```
 
 启动打包后的应用：
@@ -256,14 +287,15 @@ tools/                              启动、Hook 维护与验证工具
 docs/                               Provider 支持与实施状态
 ```
 
-运行时数据保存在各平台的应用数据目录。macOS 路径为：
+运行时数据保存在各平台的应用数据目录：
 
 ```text
-~/Library/Application Support/work.Effective-Work.Agent-Activity-Hub/
+Windows: %LOCALAPPDATA%\Effective Work\Agent Activity Hub\data\
+macOS:   ~/Library/Application Support/work.Effective-Work.Agent-Activity-Hub/
 ```
 
-该目录包含 SQLite 事件/状态数据库以及本地 IPC Socket。Provider 原始载荷会
-先被标准化，敏感的工具输入不会写入数据库。
+该目录包含 SQLite 事件/状态数据库、持久化的 Hook Helper 和本地 IPC 状态。
+Provider 原始载荷会先被标准化，敏感的工具输入不会写入数据库。
 
 ## 生成文件清理
 

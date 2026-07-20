@@ -20,10 +20,29 @@ Production activity delivery does not require an HTTP port. The historical
 Hook Hub on ports such as `8765` or `8766` is separate from the Tauri state
 path and is not required by this application.
 
+## Windows installation
+
+Download the x64 installer from the
+[Agent Activity Hub v0.1.1 release](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.1):
+
+[Download Agent.Activity.Hub_0.1.1_x64-setup.exe](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.1/Agent.Activity.Hub_0.1.1_x64-setup.exe)
+
+Verify the download against the release's
+[`SHA256SUMS.txt`](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.1/SHA256SUMS.txt)
+before running it.
+
+The installer targets 64-bit Windows 10 and Windows 11. It installs WebView2
+through Microsoft's bootstrapper when the runtime is missing. The package is
+not code-signed, so Windows SmartScreen may require **More info > Run anyway**.
+After installation, open **Agent Activity Hub** and install the required
+provider hooks from the control panel. Restart provider applications that were
+already running.
+
 ## macOS installation
 
 Download the application from [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases).
-The current [Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
+The current macOS
+[Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
 release includes an Apple Silicon (`arm64`) DMG:
 
 [Download Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
@@ -72,6 +91,21 @@ Claude Code, and Qoder hooks in the Tauri control panel.
 - Supports English and Simplified Chinese.
 - Hides the main window on close and restores it from the macOS Dock icon or
   tray menu; the tray menu can also recover the floating light.
+
+## Platform compatibility
+
+Windows uses a per-user named pipe, PowerShell-compatible quoted Hook Helper
+commands, and the Windows Tauri launcher. macOS continues to use its Unix
+socket, POSIX executable permissions, and native Tauri launcher. Platform-only
+branches are compile-time gated, and CI builds, tests, and lints both
+`windows-2022` and `macos-14`.
+
+These changes are stored in the repository and remain effective for other
+users after they pull the commit and build or install that version. Pulling
+source does not update an already installed application automatically. After
+an upgrade, reinstalling a provider hook from the control panel records a
+content-addressed Hook Helper under the user's application-data directory, so
+the hook does not depend on a source checkout or Rust `target/` directory.
 
 ## Traffic light
 
@@ -213,12 +247,14 @@ available port and passes the same URL to both Vite and Tauri.
 
 ## Production build
 
-```bash
+Build a Windows NSIS installer from Windows:
+
+```powershell
 cd apps/agent-activity-desktop
-npm run tauri build -- --bundles app
+npm run tauri build -- --bundles nsis
 ```
 
-Build a macOS DMG:
+Build a macOS DMG from macOS:
 
 ```bash
 npm run tauri build -- --bundles dmg
@@ -226,11 +262,12 @@ npm run tauri build -- --bundles dmg
 
 The build compiles the Rust Hook Helper for the active target, copies it into
 Tauri's sidecar layout, builds the React frontend, and packages the desktop
-application. The macOS application is created at:
+application. Packages are created at:
 
 ```text
+target/release/bundle/nsis/Agent Activity Hub_0.1.1_x64-setup.exe
 target/release/bundle/macos/Agent Activity Hub.app
-target/release/bundle/dmg/Agent Activity Hub_0.1.0_aarch64.dmg
+target/release/bundle/dmg/Agent Activity Hub_0.1.1_aarch64.dmg
 ```
 
 Launch the packaged application with:
@@ -281,15 +318,16 @@ tools/                              launchers, hook maintenance, and verificatio
 docs/                               provider and implementation status
 ```
 
-Runtime data is stored in the platform-specific application data directory.
-On macOS:
+Runtime data is stored in the platform-specific application data directory:
 
 ```text
-~/Library/Application Support/work.Effective-Work.Agent-Activity-Hub/
+Windows: %LOCALAPPDATA%\Effective Work\Agent Activity Hub\data\
+macOS:   ~/Library/Application Support/work.Effective-Work.Agent-Activity-Hub/
 ```
 
-The directory contains the SQLite event/state store and the local IPC socket.
-Provider payloads are normalized and sensitive tool input is not persisted.
+The directory contains the SQLite event/state store, persisted Hook Helpers,
+and local IPC state. Provider payloads are normalized and sensitive tool input
+is not persisted.
 
 ## Generated-file cleanup
 

@@ -529,6 +529,11 @@ fn main() {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show, &light, &unlock, &quit])?;
             TrayIconBuilder::new()
+                .icon(
+                    app.default_window_icon()
+                        .expect("bundled application icon is unavailable")
+                        .clone(),
+                )
                 .tooltip("Agent Activity Hub")
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id().as_ref() {

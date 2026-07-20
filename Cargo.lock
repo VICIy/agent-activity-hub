@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "activity-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "activity-protocol",
  "chrono",
@@ -15,7 +15,7 @@ dependencies = [
 
 [[package]]
 name = "activity-desktop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "activity-core",
  "activity-ipc",
@@ -27,6 +27,7 @@ dependencies = [
  "directories",
  "serde",
  "serde_json",
+ "sha2",
  "tauri",
  "tauri-build",
  "tauri-plugin-autostart",
@@ -37,7 +38,7 @@ dependencies = [
 
 [[package]]
 name = "activity-hook"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "activity-ipc",
  "activity-protocol",
@@ -51,7 +52,7 @@ dependencies = [
 
 [[package]]
 name = "activity-ipc"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "activity-protocol",
  "anyhow",
@@ -64,7 +65,7 @@ dependencies = [
 
 [[package]]
 name = "activity-protocol"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "chrono",
  "serde",
@@ -74,7 +75,7 @@ dependencies = [
 
 [[package]]
 name = "activity-store"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "activity-core",
  "activity-protocol",

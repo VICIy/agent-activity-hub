@@ -48,12 +48,17 @@ function ownedEntry(helper, event) {
   return {
     hooks: [{
       type: "command",
-      command: `\"${helper}\" --provider codex --event ${event}`,
+      command: `${quoteCommandPath(helper)} --provider codex --event ${event}`,
       timeout: 2,
     }],
     "x-agent-activity-owner": OWNER,
     "x-agent-activity-event": event,
   };
+}
+
+function quoteCommandPath(path) {
+  if (process.platform === "win32") return `& '${path.replaceAll("'", "''")}'`;
+  return `"${path}"`;
 }
 
 function withHooks(config, helper) {
@@ -120,7 +125,7 @@ function doctor(path) {
 
 function commandIsUsable(command, event) {
   if (!command.includes(`--event ${event}`)) return false;
-  const trimmed = command.trim();
+  const trimmed = command.trim().replace(/^&\s*/, "");
   const executable = trimmed.startsWith('"')
     ? trimmed.slice(1).split('"')[0]
     : trimmed.startsWith("'")
@@ -160,7 +165,7 @@ function atomicWrite(path, config) {
   }
   const temporary = `${path}.agent-activity.tmp`;
   writeFileSync(temporary, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o600 });
-  const descriptor = openSync(temporary, "r");
+  const descriptor = openSync(temporary, "r+");
   fsyncSync(descriptor);
   closeSync(descriptor);
   renameSync(temporary, path);
