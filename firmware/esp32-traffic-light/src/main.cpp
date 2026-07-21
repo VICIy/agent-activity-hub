@@ -2,18 +2,22 @@
 #include <ArduinoJson.h>
 #include <NimBLEDevice.h>
 
-// Override these in platformio.ini when the board is wired differently.
+// GFlash6/minic traffic-light board: three common-anode LEDs. Override these
+// in platformio.ini when using a differently wired ESP32 board.
+#ifndef LED_COMMON_ANODE_PIN
+#define LED_COMMON_ANODE_PIN 7
+#endif
 #ifndef LED_GREEN_PIN
-#define LED_GREEN_PIN 4
+#define LED_GREEN_PIN 10
 #endif
 #ifndef LED_YELLOW_PIN
-#define LED_YELLOW_PIN 5
+#define LED_YELLOW_PIN 9
 #endif
 #ifndef LED_RED_PIN
-#define LED_RED_PIN 6
+#define LED_RED_PIN 8
 #endif
 #ifndef LED_ACTIVE_LOW
-#define LED_ACTIVE_LOW 0
+#define LED_ACTIVE_LOW 1
 #endif
 
 static constexpr char SERVICE_UUID[] = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -100,6 +104,10 @@ void setupBle() {
 }
 
 void setup() {
+#if LED_COMMON_ANODE_PIN >= 0
+  pinMode(LED_COMMON_ANODE_PIN, OUTPUT);
+  digitalWrite(LED_COMMON_ANODE_PIN, HIGH);
+#endif
   pinMode(LED_GREEN_PIN, OUTPUT);
   pinMode(LED_YELLOW_PIN, OUTPUT);
   pinMode(LED_RED_PIN, OUTPUT);

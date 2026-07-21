@@ -1,9 +1,12 @@
 # ESP32-C3 红绿灯固件
 
-该固件把 Agent Activity Hub 的全局状态显示在三颗 LED 上，适用于 ESP32-C3 SuperMini。
-默认 GPIO 顺序为绿灯 `4`、黄灯 `5`、红灯 `6`，LED 低电平点亮的板子可在
-`platformio.ini` 的 `build_flags` 中增加 `-D LED_ACTIVE_LOW=1`。其他接线可通过
-`LED_GREEN_PIN`、`LED_YELLOW_PIN`、`LED_RED_PIN` 编译宏修改。
+该固件把 Agent Activity Hub 的全局状态显示在三颗 LED 上，适用于
+GFlash6/minic ESP32-C3 SuperMini 红绿灯板。默认接线为公共阳极 `GPIO7`、
+绿灯 `GPIO10`、黄灯 `GPIO9`、红灯 `GPIO8`，三个灯均为低电平点亮。
+
+其他接线可通过 `LED_COMMON_ANODE_PIN`、`LED_GREEN_PIN`、`LED_YELLOW_PIN`、
+`LED_RED_PIN` 和 `LED_ACTIVE_LOW` 编译宏修改；没有公共阳极控制脚时，将
+`LED_COMMON_ANODE_PIN` 设为 `-1`。
 
 ## 刷写
 
