@@ -30,7 +30,7 @@ export const MAX_LED_PERIOD = 10_000;
 export const DEFAULT_LED_PERIOD = 500;
 export const MIN_LED_BRIGHTNESS = 10;
 export const MAX_LED_BRIGHTNESS = 100;
-export const DEFAULT_LED_BRIGHTNESS = 100;
+export const DEFAULT_LED_BRIGHTNESS = 80;
 
 export const FALLBACK_STATUSES: SessionStatus[] = [
   "offline",

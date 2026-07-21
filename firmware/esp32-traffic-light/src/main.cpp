@@ -30,7 +30,7 @@ struct LightState {
   bool phaseOn = true;
   uint32_t period = 500;
   uint32_t changedAt = 0;
-  uint8_t brightness = 100;
+  uint8_t brightness = 80;
 } state;
 
 String serialLine;
@@ -69,7 +69,7 @@ void applyMessage(const String &line) {
   for (int index = 0; index < 3; index++) state.lamps[index] = lamps.length() > index && lamps[index] == '1';
   state.blink = document["blink"] | false;
   state.period = constrain(document["period"] | 500, 20, 10000);
-  state.brightness = constrain(document["brightness"] | 100, 0, 100);
+  state.brightness = constrain(document["brightness"] | 80, 0, 100);
   state.phaseOn = true;
   state.changedAt = millis();
   render();

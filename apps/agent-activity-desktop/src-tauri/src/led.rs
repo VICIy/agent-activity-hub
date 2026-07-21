@@ -8,7 +8,7 @@ pub const PERIOD_DEFAULT_MIGRATION_KEY: &str = "led.period-default-v3";
 pub const DEFAULT_PERIOD_MS: u32 = 500;
 pub const MIN_BRIGHTNESS: u8 = 10;
 pub const MAX_BRIGHTNESS: u8 = 100;
-pub const DEFAULT_BRIGHTNESS: u8 = 100;
+pub const DEFAULT_BRIGHTNESS: u8 = 80;
 
 /// LED effect stored in settings. Mask positions are green, yellow, then red.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
