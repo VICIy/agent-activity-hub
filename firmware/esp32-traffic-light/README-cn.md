@@ -30,7 +30,7 @@ USB 和 BLE 接收相同的逐行 JSON 协议；当前桌面应用内置 USB 串
 每条消息以换行符结束，协议版本为 `1`：
 
 ```json
-{"type":"state","protocol":1,"status":"working","leds":"100","blink":false,"period":500,"brightness":100}
+{"type":"state","protocol":1,"status":"working","leds":"100","blink":false,"period":500,"brightness":80}
 ```
 
 `leds` 的三位顺序固定为绿、黄、红；`period` 是闪烁单个亮/灭阶段的毫秒数。

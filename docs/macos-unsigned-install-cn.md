@@ -6,7 +6,7 @@
 
 ## 适用范围
 
-当前 `Agent.Activity.Hub_0.1.0_aarch64.dmg` 是 Apple Silicon 版本，只能运行在
+当前 `Agent.Activity.Hub_0.1.2_aarch64.dmg` 是 Apple Silicon 版本，只能运行在
 `arm64` Mac 上。目标电脑可以先执行：
 
 ```bash
@@ -22,13 +22,13 @@ Intel 版本。
 页面下载 DMG。当前版本的 SHA-256 为：
 
 ```text
-1c84d09244ed4287d5a9081b6c74ec8301d9d5870726f5eb0e7df2de8698740a
+dbc5790f88b5cf95e71697df4cf6c547ddccc779bd7a6dcb80b482fca2b3dcd8
 ```
 
 在下载目录执行校验：
 
 ```bash
-shasum -a 256 "$HOME/Downloads/Agent.Activity.Hub_0.1.0_aarch64.dmg"
+shasum -a 256 "$HOME/Downloads/Agent.Activity.Hub_0.1.2_aarch64.dmg"
 ```
 
 只有校验值一致时才继续安装。

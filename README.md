@@ -134,7 +134,7 @@ The Settings page can change:
 - vertical or horizontal floating-light orientation;
 - active lamp mask for each state;
 - blink on/off and phase interval;
-- global brightness;
+- global brightness (80% by default, adjustable from 10% to 100%);
 - launch at login;
 - interface language.
 
@@ -323,8 +323,9 @@ apps/agent-activity-desktop/       React UI and Tauri shell
 native/agent-activity/             protocol, reducer, IPC, storage, Hook Helper
 sdk/protocol-schema/               public JSON schemas
 fixtures/agent_activity/           redacted provider payload fixtures
+firmware/esp32-traffic-light/      ESP32-C3 firmware, wiring, and protocol
 tools/                              launchers, hook maintenance, and verification
-docs/                               provider and implementation status
+docs/                               architecture, provider/status, and installation docs
 ```
 
 Runtime data is stored in the platform-specific application data directory:
