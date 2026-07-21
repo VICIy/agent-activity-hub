@@ -354,5 +354,6 @@ and compatibility executables referenced by currently installed provider
 hooks.
 
 Further implementation details are available in
-[docs/implementation-status.md](docs/implementation-status.md) and
+[the Chinese architecture guide](docs/architecture-cn.md),
+[docs/implementation-status.md](docs/implementation-status.md), and
 [docs/provider-support.md](docs/provider-support.md).

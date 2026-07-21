@@ -321,5 +321,6 @@ node tools/clean_generated.mjs
 Hook 仍在引用的兼容性可执行文件。
 
 更多实现细节见
+[docs/architecture-cn.md](docs/architecture-cn.md)、
 [docs/implementation-status.md](docs/implementation-status.md) 和
 [docs/provider-support.md](docs/provider-support.md)。
