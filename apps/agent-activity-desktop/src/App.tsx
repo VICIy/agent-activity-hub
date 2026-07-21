@@ -30,6 +30,7 @@ import type { AdapterProvider, AdapterStatus, SessionState, SessionStatus } from
 import { useActivity } from "./useActivity";
 import { useLocale, type TranslationKey } from "./i18n";
 import { LedSettingsPanel } from "./LedSettingsPanel";
+import { Esp32SettingsPanel } from "./Esp32SettingsPanel";
 import { dismissSession, isDismissibleSessionStatus } from "./sessionActions";
 import {
   FLOATING_LIGHT_ORIENTATION_EVENT,
@@ -381,6 +382,7 @@ function SettingsView() {
         <AutostartToggle label={t("settings.launch")} detail={t("settings.launch.detail")} />
         <Toggle label={t("settings.history")} detail={t("settings.history.detail")} initial disabled />
       </div>
+      <Esp32SettingsPanel />
       <LedSettingsPanel />
     </div>
   );

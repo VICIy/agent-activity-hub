@@ -257,6 +257,12 @@ main { min-width: 0; height: 100vh; overflow: auto; }
 .chip.selected { border-color: var(--green); color: #0f1b14; background: var(--green); }
 
 .led-settings { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 14px; }
+.esp32-settings { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+.esp32-settings h3, .esp32-settings p { margin: 0; }
+.esp32-settings p { color: var(--muted); margin-top: 5px; }
+.esp32-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.esp32-controls select { min-width: 260px; flex: 1; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); padding: 9px 11px; }
+.esp32-error { color: var(--red); }
 .led-settings .section-heading { margin: 0; }
 .led-settings .section-heading.compact { min-height: 64px; height: auto; padding-block: 8px; gap: 12px; }
 .led-input { height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); color: #d6dadd; font-size: 11px; min-width: 200px; }

@@ -2,6 +2,7 @@
 
 mod claude_session;
 mod codex_session;
+mod esp32;
 mod hook_config;
 mod led;
 mod qoder_session;
@@ -46,6 +47,7 @@ struct Runtime {
     app: Mutex<Option<AppHandle>>,
     led_mapping: Mutex<LedMapping>,
     brightness: Mutex<u8>,
+    esp32: esp32::Esp32Manager,
 }
 
 impl Runtime {
@@ -77,6 +79,7 @@ impl Runtime {
         if let Some(app) = self.app.lock().expect("app lock poisoned").as_ref() {
             let _ = app.emit("activity://state", snapshot.clone());
         }
+        self.sync_esp32(&snapshot);
         Response::ok(match outcome {
             ApplyOutcome::StateChanged => "state_changed",
             ApplyOutcome::AcceptedNoChange => "accepted",
@@ -102,6 +105,7 @@ impl Runtime {
         if let Some(app) = self.app.lock().expect("app lock poisoned").as_ref() {
             let _ = app.emit("activity://state", snapshot.clone());
         }
+        self.sync_esp32(&snapshot);
     }
 
     fn prune_events(&self) {
@@ -126,6 +130,7 @@ impl Runtime {
         if let Some(app) = self.app.lock().expect("app lock poisoned").as_ref() {
             let _ = app.emit("activity://state", snapshot.clone());
         }
+        self.sync_esp32(&snapshot);
         Ok(true)
     }
 
@@ -141,6 +146,16 @@ impl Runtime {
             let _ = store.set_setting(MAPPING_KEY, &payload);
         }
         let _ = store.set_setting(BRIGHTNESS_KEY, &brightness.to_string());
+    }
+
+    fn sync_esp32(&self, snapshot: &StateSnapshot) {
+        let mapping = self.led_mapping.lock().expect("led-mapping lock poisoned");
+        let brightness = *self.brightness.lock().expect("brightness lock poisoned");
+        let status = serde_json::to_value(&snapshot.global.status)
+            .ok()
+            .and_then(|value| value.as_str().map(str::to_owned))
+            .unwrap_or_else(|| "idle".into());
+        self.esp32.sync(&status, &mapping, brightness);
     }
 }
 
@@ -225,7 +240,31 @@ fn set_led_mapping(
     if let Some(app) = runtime.app.lock().expect("app lock poisoned").as_ref() {
         let _ = app.emit("led://settings", event_settings);
     }
+    runtime.sync_esp32(&runtime.snapshot());
     Ok(())
+}
+
+#[tauri::command]
+fn list_esp32_ports() -> Vec<esp32::Esp32Port> {
+    esp32::available_ports()
+}
+
+#[tauri::command]
+fn get_esp32_status(runtime: State<'_, Arc<Runtime>>) -> esp32::Esp32Status {
+    runtime.esp32.status()
+}
+
+#[tauri::command]
+fn connect_esp32(port: String, runtime: State<'_, Arc<Runtime>>) -> Result<esp32::Esp32Status, String> {
+    runtime.esp32.connect(&port)?;
+    runtime.sync_esp32(&runtime.snapshot());
+    Ok(runtime.esp32.status())
+}
+
+#[tauri::command]
+fn disconnect_esp32(runtime: State<'_, Arc<Runtime>>) -> esp32::Esp32Status {
+    runtime.esp32.disconnect();
+    runtime.esp32.status()
 }
 
 #[tauri::command]
@@ -397,6 +436,7 @@ fn initialize_runtime() -> Result<(Arc<Runtime>, PathBuf)> {
             app: Mutex::new(None),
             led_mapping: Mutex::new(mapping),
             brightness: Mutex::new(brightness),
+            esp32: esp32::Esp32Manager::default(),
         }),
         spool_path,
     ))
@@ -504,6 +544,10 @@ fn main() {
             dismiss_session,
             get_led_settings,
             set_led_mapping,
+            list_esp32_ports,
+            get_esp32_status,
+            connect_esp32,
+            disconnect_esp32,
             get_autostart,
             set_autostart,
             get_adapter_statuses,
@@ -633,6 +677,7 @@ mod tests {
             app: Mutex::new(None),
             led_mapping: Mutex::new(LedMapping::defaults()),
             brightness: Mutex::new(DEFAULT_BRIGHTNESS),
+            esp32: esp32::Esp32Manager::default(),
         })
     }
 

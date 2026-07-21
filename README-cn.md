@@ -79,6 +79,7 @@ Use $agent-activity-hub-install to install Agent Activity Hub on this Mac.
 - 红、绿、黄以及空闲、离线会话都可以单独移除；同一会话产生新事件后会以最新状态
   重新出现。
 - 支持英文与简体中文。
+- 支持 ESP32-C3 外接红绿灯：桌面端通过 USB 串口实时同步状态和灯效，仓库内置同时支持 USB 与 BLE 的固件。
 - 关闭主窗口时应用继续在后台运行，可通过 macOS 程序坞图标或托盘菜单重新
   打开控制面板，也可从托盘菜单恢复红绿灯浮窗。
 
@@ -95,6 +96,10 @@ Windows Tauri 启动器；macOS 继续使用 Unix Socket、POSIX 可执行权限
 `target/` 目录。
 
 ## 红绿灯浮窗
+
+ESP32-C3 的固件、刷写、接线和协议说明位于
+[`firmware/esp32-traffic-light/`](firmware/esp32-traffic-light/README-cn.md)。刷写后在控制面板
+“设置 > ESP32 设备”中刷新端口并连接；硬件使用与浮窗相同的灯效配置，不依赖旧的 `8765` 端口。
 
 灯的顺序固定为绿、黄、红。默认灯效如下：
 

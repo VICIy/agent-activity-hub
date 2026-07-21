@@ -89,6 +89,7 @@ Claude Code, and Qoder hooks in the Tauri control panel.
 - Lets dismissed sessions reappear when a newer event
   arrives for the same session.
 - Supports English and Simplified Chinese.
+- Supports an ESP32-C3 traffic light over USB serial; repository firmware also accepts the same protocol over BLE.
 - Hides the main window on close and restores it from the macOS Dock icon or
   tray menu; the tray menu can also recover the floating light.
 

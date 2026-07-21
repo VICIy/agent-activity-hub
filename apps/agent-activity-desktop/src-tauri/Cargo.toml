@@ -23,6 +23,7 @@ chrono.workspace = true
 directories.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+serialport = "4.7"
 sha2.workspace = true
 tauri = { version = "2.5", features = ["macos-private-api", "tray-icon"] }
 tauri-plugin-autostart = "2.3"
