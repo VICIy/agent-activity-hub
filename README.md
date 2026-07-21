@@ -42,10 +42,10 @@ already running.
 
 Download the application from [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases).
 The current macOS
-[Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
+[Agent Activity Hub v0.1.2](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.2)
 release includes an Apple Silicon (`arm64`) DMG:
 
-[Download Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
+[Download Agent.Activity.Hub_0.1.2_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.2/Agent.Activity.Hub_0.1.2_aarch64.dmg)
 
 The installed application is named **Agent Activity Hub**. The traffic light is
 its floating window, not a separate application. After dragging the app to
@@ -268,7 +268,7 @@ application. Packages are created at:
 ```text
 target/release/bundle/nsis/Agent Activity Hub_0.1.1_x64-setup.exe
 target/release/bundle/macos/Agent Activity Hub.app
-target/release/bundle/dmg/Agent Activity Hub_0.1.1_aarch64.dmg
+target/release/bundle/dmg/Agent Activity Hub_0.1.2_aarch64.dmg
 ```
 
 Launch the packaged application with:

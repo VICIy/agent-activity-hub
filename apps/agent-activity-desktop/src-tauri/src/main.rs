@@ -255,7 +255,10 @@ fn get_esp32_status(runtime: State<'_, Arc<Runtime>>) -> esp32::Esp32Status {
 }
 
 #[tauri::command]
-fn connect_esp32(port: String, runtime: State<'_, Arc<Runtime>>) -> Result<esp32::Esp32Status, String> {
+fn connect_esp32(
+    port: String,
+    runtime: State<'_, Arc<Runtime>>,
+) -> Result<esp32::Esp32Status, String> {
     runtime.esp32.connect(&port)?;
     runtime.sync_esp32(&runtime.snapshot());
     Ok(runtime.esp32.status())

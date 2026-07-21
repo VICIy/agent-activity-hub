@@ -43,12 +43,25 @@ pub fn available_ports() -> Vec<Esp32Port> {
                     let manufacturer = info.manufacturer.unwrap_or_default();
                     let text = format!("{manufacturer} {product}").trim().to_string();
                     let lower = text.to_ascii_lowercase();
-                    (text, lower.contains("esp32") || lower.contains("espressif") || info.vid == 0x303a)
+                    (
+                        text,
+                        lower.contains("esp32")
+                            || lower.contains("espressif")
+                            || info.vid == 0x303a,
+                    )
                 }
                 _ => (String::new(), false),
             };
-            let label = if detail.is_empty() { port.port_name.clone() } else { format!("{} — {detail}", port.port_name) };
-            Esp32Port { name: port.port_name, label, likely_esp32 }
+            let label = if detail.is_empty() {
+                port.port_name.clone()
+            } else {
+                format!("{} — {detail}", port.port_name)
+            };
+            Esp32Port {
+                name: port.port_name,
+                label,
+                likely_esp32,
+            }
         })
         .collect::<Vec<_>>();
     ports.sort_by_key(|port| (!port.likely_esp32, port.name.clone()));
@@ -66,30 +79,52 @@ impl Esp32Manager {
             .map_err(|error| format!("cannot open {name}: {error}"))?;
         port.write_all(b"{\"type\":\"hello\",\"protocol\":1}\n")
             .map_err(|error| format!("cannot initialize {name}: {error}"))?;
-        *self.connection.lock().expect("esp32 connection lock poisoned") = Some(Connection { name: name.into(), port });
+        *self
+            .connection
+            .lock()
+            .expect("esp32 connection lock poisoned") = Some(Connection {
+            name: name.into(),
+            port,
+        });
         *self.last_error.lock().expect("esp32 error lock poisoned") = None;
         Ok(())
     }
 
     pub fn disconnect(&self) {
-        *self.connection.lock().expect("esp32 connection lock poisoned") = None;
+        *self
+            .connection
+            .lock()
+            .expect("esp32 connection lock poisoned") = None;
         *self.last_error.lock().expect("esp32 error lock poisoned") = None;
     }
 
     pub fn status(&self) -> Esp32Status {
-        let connection = self.connection.lock().expect("esp32 connection lock poisoned");
+        let connection = self
+            .connection
+            .lock()
+            .expect("esp32 connection lock poisoned");
         Esp32Status {
             connected: connection.is_some(),
             port: connection.as_ref().map(|value| value.name.clone()),
-            error: self.last_error.lock().expect("esp32 error lock poisoned").clone(),
+            error: self
+                .last_error
+                .lock()
+                .expect("esp32 error lock poisoned")
+                .clone(),
         }
     }
 
     pub fn sync(&self, status: &str, mapping: &LedMapping, brightness: u8) {
-        let effect = mapping.effects.get(status).cloned().unwrap_or(LedEffect::Solid { leds: "000".into() });
+        let effect = mapping
+            .effects
+            .get(status)
+            .cloned()
+            .unwrap_or(LedEffect::Solid { leds: "000".into() });
         let (leds, blink, period) = match effect {
             LedEffect::Solid { leds } => (leds, false, 500),
-            LedEffect::Pattern { effect } => (effect.mask, effect.pattern == "blink", effect.period),
+            LedEffect::Pattern { effect } => {
+                (effect.mask, effect.pattern == "blink", effect.period)
+            }
         };
         let payload = serde_json::json!({
             "type": "state", "protocol": 1, "status": status, "leds": leds,
@@ -97,8 +132,13 @@ impl Esp32Manager {
         });
         let mut bytes = payload.to_string().into_bytes();
         bytes.push(b'\n');
-        let mut connection = self.connection.lock().expect("esp32 connection lock poisoned");
-        let write_error = connection.as_mut().and_then(|value| value.port.write_all(&bytes).err());
+        let mut connection = self
+            .connection
+            .lock()
+            .expect("esp32 connection lock poisoned");
+        let write_error = connection
+            .as_mut()
+            .and_then(|value| value.port.write_all(&bytes).err());
         if let Some(error) = write_error {
             *connection = None;
             *self.last_error.lock().expect("esp32 error lock poisoned") = Some(error.to_string());

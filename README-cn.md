@@ -38,10 +38,10 @@ Provider 的 Hook；已经运行的 Provider 应用需要重启。
 
 推荐从 [GitHub Releases](https://github.com/VICIy/agent-activity-hub/releases)
 下载 DMG。当前 macOS 发布的
-[Agent Activity Hub v0.1.0](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.0)
+[Agent Activity Hub v0.1.2](https://github.com/VICIy/agent-activity-hub/releases/tag/v0.1.2)
 提供 Apple Silicon（`arm64`）安装包：
 
-[下载 Agent.Activity.Hub_0.1.0_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.0/Agent.Activity.Hub_0.1.0_aarch64.dmg)
+[下载 Agent.Activity.Hub_0.1.2_aarch64.dmg](https://github.com/VICIy/agent-activity-hub/releases/download/v0.1.2/Agent.Activity.Hub_0.1.2_aarch64.dmg)
 
 安装后的应用名称是 **Agent Activity Hub**；红绿灯是应用内的浮动窗口，不是独立应用。
 将应用拖入“应用程序”后，请在 Finder 或 Spotlight 中搜索 **Agent Activity Hub**。
@@ -243,7 +243,7 @@ npm run tauri build -- --bundles dmg
 ```text
 target/release/bundle/nsis/Agent Activity Hub_0.1.1_x64-setup.exe
 target/release/bundle/macos/Agent Activity Hub.app
-target/release/bundle/dmg/Agent Activity Hub_0.1.1_aarch64.dmg
+target/release/bundle/dmg/Agent Activity Hub_0.1.2_aarch64.dmg
 ```
 
 启动打包后的应用：
