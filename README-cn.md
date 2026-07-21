@@ -101,6 +101,11 @@ ESP32-C3 的固件、刷写、接线和协议说明位于
 [`firmware/esp32-traffic-light/`](firmware/esp32-traffic-light/README-cn.md)。刷写后在控制面板
 “设置 > ESP32 设备”中刷新端口并连接；硬件使用与浮窗相同的灯效配置，不依赖旧的 `8765` 端口。
 
+默认硬件接线兼容 [GFlash6/minic](https://github.com/GFlash6/minic) ESP32-C3
+红绿灯板。GPIO7 公共阳极及 GPIO10/9/8 三灯接线定义参考该项目；本仓库中的
+Agent Activity Hub 串口协议、桌面端同步与固件实现由本项目维护。感谢原作者
+[GFlash6](https://github.com/GFlash6) 公开硬件项目和接线信息。
+
 灯的顺序固定为绿、黄、红。默认灯效如下：
 
 | 状态 | 默认灯效 | 自动流转 |

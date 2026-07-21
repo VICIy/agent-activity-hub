@@ -110,6 +110,14 @@ the hook does not depend on a source checkout or Rust `target/` directory.
 
 ## Traffic light
 
+The default wiring is compatible with the
+[GFlash6/minic](https://github.com/GFlash6/minic) ESP32-C3 traffic-light
+board. Its GPIO7 common-anode and GPIO10/9/8 lamp wiring definitions were
+referenced from that project. The Agent Activity Hub serial protocol, desktop
+synchronization, and firmware implementation in this repository are maintained
+by this project. Thanks to [GFlash6](https://github.com/GFlash6) for publishing
+the hardware project and wiring information.
+
 The lamp order is green, yellow, red. The default mapping is:
 
 | State | Default effect | Automatic transition |

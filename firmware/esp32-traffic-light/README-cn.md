@@ -4,6 +4,12 @@
 GFlash6/minic ESP32-C3 SuperMini 红绿灯板。默认接线为公共阳极 `GPIO7`、
 绿灯 `GPIO10`、黄灯 `GPIO9`、红灯 `GPIO8`，三个灯均为低电平点亮。
 
+上述硬件接线定义参考 [GFlash6/minic](https://github.com/GFlash6/minic)
+项目（参考提交：[`a0149d7`](https://github.com/GFlash6/minic/commit/a0149d7ff86c5b50b6216743b4b267d93176f157)）。
+感谢原作者 [GFlash6](https://github.com/GFlash6) 公开项目和接线信息。本目录的
+固件不是上游固件副本；Agent Activity Hub 的逐行 JSON 协议、USB/BLE 接收和灯效同步
+由本仓库实现并维护。
+
 其他接线可通过 `LED_COMMON_ANODE_PIN`、`LED_GREEN_PIN`、`LED_YELLOW_PIN`、
 `LED_RED_PIN` 和 `LED_ACTIVE_LOW` 编译宏修改；没有公共阳极控制脚时，将
 `LED_COMMON_ANODE_PIN` 设为 `-1`。
